@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LoopTalk",
-  description: "Random one-to-one voice chats with people around the world.",
+  title: "LoopTalk - Random Voice Chat",
+  description:
+    "Anonymous one-to-one random voice chat built for quick conversations.",
 };
 
 export default function RootLayout({

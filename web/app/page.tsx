@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { socket } from "@/lib/socket";
@@ -28,6 +29,20 @@ type IceCandidatePayload = {
 const webRtcConfig: RTCConfiguration = {
   iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
 };
+
+const voiceAudioConstraints: MediaStreamConstraints = {
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true,
+    channelCount: 1,
+  },
+};
+
+const audioQualityNotes = [
+  "For best voice quality, use earphones.",
+  "Speaker mode may cause echo or unclear voice.",
+];
 
 export default function Home() {
   const highlights = ["Anonymous", "Voice Only", "Instant Matching"];
@@ -62,6 +77,14 @@ export default function Home() {
   const setMicrophoneTracksEnabled = useCallback((enabled: boolean) => {
     microphoneStreamRef.current?.getAudioTracks().forEach((track) => {
       track.enabled = enabled;
+    });
+  }, []);
+
+  const applySpeechContentHint = useCallback((stream: MediaStream) => {
+    stream.getAudioTracks().forEach((track) => {
+      if ("contentHint" in track) {
+        track.contentHint = "speech";
+      }
     });
   }, []);
 
@@ -494,7 +517,8 @@ export default function Home() {
       setMicrophoneStatus("idle");
       setIsMuted(false);
       stopMicrophoneStream();
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream =
+        await navigator.mediaDevices.getUserMedia(voiceAudioConstraints);
 
       if (sessionTokenRef.current !== sessionToken) {
         stream.getTracks().forEach((track) => {
@@ -503,6 +527,7 @@ export default function Home() {
         return;
       }
 
+      applySpeechContentHint(stream);
       microphoneStreamRef.current = stream;
       shouldJoinQueueRef.current = true;
       hasJoinedQueueRef.current = false;
@@ -521,6 +546,27 @@ export default function Home() {
         setIsStarting(false);
       }
     }
+  };
+
+  const handleReport = () => {
+    if (isLeavingCallRef.current) {
+      return;
+    }
+
+    isLeavingCallRef.current = true;
+
+    if (socket.connected) {
+      socket.emit("leave_call");
+    }
+
+    closePeerConnection();
+    resetSocketConnection();
+    stopMicrophoneStream();
+    setIsMuted(false);
+    setMicrophoneStatus("idle");
+    setSocketMessage(
+      "Thanks for reporting. You left the chat and are back on the homepage.",
+    );
   };
 
   const handleCancelSearch = () => {
@@ -591,7 +637,7 @@ export default function Home() {
 
   return (
     <main className="relative flex min-h-screen overflow-hidden bg-[#f7f4ee] text-[#151515]">
-      <audio ref={remoteAudioRef} autoPlay className="hidden" />
+      <audio ref={remoteAudioRef} autoPlay playsInline className="hidden" />
       <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(19,170,145,0.16),transparent_35%),linear-gradient(300deg,rgba(244,98,76,0.14),transparent_38%)]" />
 
       <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-12">
@@ -609,6 +655,17 @@ export default function Home() {
             </div>
             <span className="text-xl font-black tracking-tight">LoopTalk</span>
           </div>
+          <nav
+            aria-label="Helpful pages"
+            className="flex items-center gap-4 text-sm font-bold text-[#505050]"
+          >
+            <Link className="transition hover:text-[#151515]" href="/safety">
+              Safety
+            </Link>
+            <Link className="transition hover:text-[#151515]" href="/privacy">
+              Privacy
+            </Link>
+          </nav>
         </header>
 
         <div className="grid flex-1 items-center gap-12 py-14 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.78fr)] lg:py-8">
@@ -626,6 +683,17 @@ export default function Home() {
               conversations with someone new, without profiles, feeds, or
               endless setup.
             </p>
+
+            <div className="mt-6 grid max-w-2xl gap-2 text-sm font-semibold leading-6 text-[#5f5b55]">
+              <p>For best voice quality, use earphones.</p>
+              <p>Speaker mode may cause echo or unclear voice.</p>
+              {microphoneStatus === "idle" && (
+                <p className="text-[#287d70]">
+                  Be respectful. Do not share personal information. You can
+                  leave anytime.
+                </p>
+              )}
+            </div>
 
             {microphoneStatus === "searching" ? (
               <div
@@ -685,6 +753,11 @@ export default function Home() {
                     <p className="mt-1 text-xs font-semibold text-[#8a6259]">
                       WebRTC: {webRtcConnectionState}
                     </p>
+                    <div className="mt-3 grid gap-1 text-xs font-semibold leading-5 text-[#5f5b55]">
+                      {audioQualityNotes.map((note) => (
+                        <p key={note}>{note}</p>
+                      ))}
+                    </div>
                   </div>
                   <div
                     aria-hidden="true"
@@ -723,6 +796,13 @@ export default function Home() {
                     className="inline-flex w-full items-center justify-center rounded-full border border-[#f4624c]/25 bg-[#f4624c] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#d94d3b] focus:outline-none focus:ring-4 focus:ring-[#f4624c]/20 sm:w-auto"
                   >
                     End Call
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleReport}
+                    className="inline-flex w-full items-center justify-center rounded-full border border-[#151515]/15 bg-white px-5 py-3 text-sm font-bold text-[#8a3d33] transition hover:-translate-y-0.5 hover:border-[#f4624c]/35 focus:outline-none focus:ring-4 focus:ring-[#f4624c]/20 sm:w-auto"
+                  >
+                    Report
                   </button>
                 </div>
               </div>
@@ -809,7 +889,14 @@ export default function Home() {
 
         <footer className="pb-2 text-center text-sm leading-6 text-[#5f5b55]">
           Please keep conversations respectful. Leave any chat that feels
-          uncomfortable or unsafe.
+          uncomfortable or unsafe.{" "}
+          <Link className="font-bold text-[#287d70]" href="/safety">
+            Safety
+          </Link>{" "}
+          ·{" "}
+          <Link className="font-bold text-[#287d70]" href="/privacy">
+            Privacy
+          </Link>
         </footer>
       </section>
     </main>
