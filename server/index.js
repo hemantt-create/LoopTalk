@@ -6,19 +6,33 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-  })
-);
+const PORT = process.env.PORT || 3001;
+const allowedOrigins = ["http://localhost:3000", process.env.FRONTEND_URL].filter(Boolean);
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error("Not allowed by CORS"));
+  },
+};
+
+app.use(cors(corsOptions));
 
 app.get("/", (req, res) => {
   res.send("LoopTalk server is running");
 });
 
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });
@@ -242,6 +256,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3001, () => {
-  console.log("LoopTalk server running at http://localhost:3001");
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`LoopTalk server running on port ${PORT}`);
 });
