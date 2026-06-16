@@ -25,6 +25,9 @@ type IceCandidatePayload = {
   roomId: string;
   candidate: RTCIceCandidateInit;
 };
+type OnlineCountPayload = {
+  count: number;
+};
 
 const webRtcConfig: RTCConfiguration = {
   iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
@@ -53,6 +56,7 @@ export default function Home() {
   const [matchInfo, setMatchInfo] = useState<MatchInfo | null>(null);
   const [webRtcConnectionState, setWebRtcConnectionState] =
     useState<WebRtcConnectionStatus>("idle");
+  const [onlineCount, setOnlineCount] = useState<number | null>(null);
   const [isStarting, setIsStarting] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const microphoneStreamRef = useRef<MediaStream | null>(null);
@@ -66,6 +70,12 @@ export default function Home() {
   const isStartingRef = useRef(false);
   const isLeavingCallRef = useRef(false);
   const sessionTokenRef = useRef(0);
+  const onlineCountText =
+    onlineCount === null
+      ? "Checking online users…"
+      : onlineCount === 1
+        ? "🟢 1 person online"
+        : `🟢 ${onlineCount} people online`;
 
   const stopMicrophoneStream = useCallback(() => {
     microphoneStreamRef.current?.getTracks().forEach((track) => {
@@ -317,6 +327,10 @@ export default function Home() {
     [],
   );
 
+  const handleOnlineCount = useCallback(({ count }: OnlineCountPayload) => {
+    setOnlineCount(Number.isFinite(count) ? Math.max(0, count) : 0);
+  }, []);
+
   const emitJoinQueue = useCallback(() => {
     if (
       socket.connected &&
@@ -331,15 +345,18 @@ export default function Home() {
 
   const handleSocketConnect = useCallback(() => {
     setSocketStatus("connected");
-    setSocketMessage("Connected to LoopTalk server");
 
     if (shouldJoinQueueRef.current) {
+      setSocketMessage("Connected to LoopTalk server");
       emitJoinQueue();
+    } else {
+      setSocketMessage(null);
     }
   }, [emitJoinQueue]);
 
   const handleSocketConnectError = useCallback((error: Error) => {
     setSocketStatus("error");
+    setOnlineCount(null);
     setSocketMessage(
       `Could not connect to LoopTalk server at http://localhost:3001. ${error.message || "Please make sure the backend is running."}`,
     );
@@ -347,6 +364,7 @@ export default function Home() {
 
   const handleSocketDisconnect = useCallback(() => {
     hasJoinedQueueRef.current = false;
+    setOnlineCount(null);
 
     if (!shouldJoinQueueRef.current && !currentRoomIdRef.current) {
       setSocketStatus("idle");
@@ -414,6 +432,7 @@ export default function Home() {
     socket.off("connect", handleSocketConnect);
     socket.off("connect_error", handleSocketConnectError);
     socket.off("disconnect", handleSocketDisconnect);
+    socket.off("online_count", handleOnlineCount);
     socket.off("match_found", handleMatchFound);
     socket.off("peer_left", handlePeerLeft);
     socket.off("webrtc_offer", handleWebRtcOffer);
@@ -422,6 +441,7 @@ export default function Home() {
   }, [
     handleIceCandidate,
     handleMatchFound,
+    handleOnlineCount,
     handlePeerLeft,
     handleSocketConnect,
     handleSocketConnectError,
@@ -435,38 +455,30 @@ export default function Home() {
     socket.disconnect();
   }, [removeSocketListeners]);
 
-  const resetSocketConnection = useCallback(() => {
+  const resetCallSession = useCallback(() => {
     markSessionInactive();
     setMatchInfo(null);
     closePeerConnection();
-    disconnectSocket();
-    setSocketStatus("idle");
+    setSocketStatus(socket.connected ? "connected" : "idle");
     setSocketMessage(null);
-  }, [closePeerConnection, disconnectSocket, markSessionInactive]);
+  }, [closePeerConnection, markSessionInactive]);
 
-  const connectSocket = useCallback(() => {
+  const registerSocketListeners = useCallback(() => {
     removeSocketListeners();
-    setSocketStatus("connecting");
-    setSocketMessage(null);
 
     socket.on("connect", handleSocketConnect);
     socket.on("connect_error", handleSocketConnectError);
     socket.on("disconnect", handleSocketDisconnect);
+    socket.on("online_count", handleOnlineCount);
     socket.on("match_found", handleMatchFound);
     socket.on("peer_left", handlePeerLeft);
     socket.on("webrtc_offer", handleWebRtcOffer);
     socket.on("webrtc_answer", handleWebRtcAnswer);
     socket.on("ice_candidate", handleIceCandidate);
-
-    if (socket.connected) {
-      handleSocketConnect();
-      return;
-    }
-
-    socket.connect();
   }, [
     handleIceCandidate,
     handleMatchFound,
+    handleOnlineCount,
     handlePeerLeft,
     handleSocketConnect,
     handleSocketConnectError,
@@ -476,7 +488,33 @@ export default function Home() {
     removeSocketListeners,
   ]);
 
+  const connectSocket = useCallback(() => {
+    registerSocketListeners();
+    setSocketStatus("connecting");
+    setSocketMessage(null);
+
+    if (socket.connected) {
+      handleSocketConnect();
+      return;
+    }
+
+    socket.connect();
+  }, [
+    handleSocketConnect,
+    registerSocketListeners,
+  ]);
+
+  const connectVisitorSocket = useCallback(() => {
+    registerSocketListeners();
+
+    if (!socket.connected) {
+      socket.connect();
+    }
+  }, [registerSocketListeners]);
+
   useEffect(() => {
+    connectVisitorSocket();
+
     const handlePageExit = () => {
       closePeerConnection();
       stopMicrophoneStream();
@@ -493,7 +531,12 @@ export default function Home() {
       stopMicrophoneStream();
       disconnectSocket();
     };
-  }, [closePeerConnection, disconnectSocket, stopMicrophoneStream]);
+  }, [
+    closePeerConnection,
+    connectVisitorSocket,
+    disconnectSocket,
+    stopMicrophoneStream,
+  ]);
 
   const handleStartTalking = async () => {
     if (isStartingRef.current || microphoneStatus !== "idle") {
@@ -502,11 +545,11 @@ export default function Home() {
 
     if (!navigator.mediaDevices?.getUserMedia) {
       setMicrophoneStatus("denied");
-      resetSocketConnection();
+      resetCallSession();
       return;
     }
 
-    resetSocketConnection();
+    resetCallSession();
     const sessionToken = sessionTokenRef.current + 1;
     sessionTokenRef.current = sessionToken;
     isStartingRef.current = true;
@@ -537,7 +580,7 @@ export default function Home() {
     } catch {
       if (sessionTokenRef.current === sessionToken) {
         stopMicrophoneStream();
-        resetSocketConnection();
+        resetCallSession();
         setMicrophoneStatus("denied");
       }
     } finally {
@@ -560,7 +603,7 @@ export default function Home() {
     }
 
     closePeerConnection();
-    resetSocketConnection();
+    resetCallSession();
     stopMicrophoneStream();
     setIsMuted(false);
     setMicrophoneStatus("idle");
@@ -578,7 +621,7 @@ export default function Home() {
     }
 
     isLeavingCallRef.current = false;
-    resetSocketConnection();
+    resetCallSession();
     stopMicrophoneStream();
     setIsMuted(false);
     setMicrophoneStatus("idle");
@@ -629,7 +672,7 @@ export default function Home() {
     }
 
     closePeerConnection();
-    resetSocketConnection();
+    resetCallSession();
     stopMicrophoneStream();
     setIsMuted(false);
     setMicrophoneStatus("idle");
@@ -641,7 +684,7 @@ export default function Home() {
       <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(19,170,145,0.16),transparent_35%),linear-gradient(300deg,rgba(244,98,76,0.14),transparent_38%)]" />
 
       <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-12">
-        <header className="flex items-center justify-between">
+        <header className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div
               aria-hidden="true"
@@ -655,17 +698,25 @@ export default function Home() {
             </div>
             <span className="text-xl font-black tracking-tight">LoopTalk</span>
           </div>
-          <nav
-            aria-label="Helpful pages"
-            className="flex items-center gap-4 text-sm font-bold text-[#505050]"
-          >
-            <Link className="transition hover:text-[#151515]" href="/safety">
-              Safety
-            </Link>
-            <Link className="transition hover:text-[#151515]" href="/privacy">
-              Privacy
-            </Link>
-          </nav>
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <p className="rounded-full border border-[#151515]/10 bg-white/70 px-4 py-2 text-xs font-bold text-[#287d70] shadow-sm backdrop-blur sm:text-sm">
+              {onlineCountText}
+            </p>
+            <nav
+              aria-label="Helpful pages"
+              className="flex items-center gap-4 text-sm font-bold text-[#505050]"
+            >
+              <Link className="transition hover:text-[#151515]" href="/safety">
+                Safety
+              </Link>
+              <Link
+                className="transition hover:text-[#151515]"
+                href="/privacy"
+              >
+                Privacy
+              </Link>
+            </nav>
+          </div>
         </header>
 
         <div className="grid flex-1 items-center gap-12 py-14 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.78fr)] lg:py-8">
@@ -893,7 +944,7 @@ export default function Home() {
           <Link className="font-bold text-[#287d70]" href="/safety">
             Safety
           </Link>{" "}
-          ·{" "}
+          |{" "}
           <Link className="font-bold text-[#287d70]" href="/privacy">
             Privacy
           </Link>

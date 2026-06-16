@@ -40,7 +40,12 @@ const io = new Server(server, {
 const waitingQueue = [];
 const activeCalls = new Map();
 const recentPeers = new Map();
+const onlineVisitors = new Set();
 let roomCounter = 0;
+
+const emitOnlineCount = () => {
+  io.emit("online_count", { count: onlineVisitors.size });
+};
 
 const removeFromQueue = (socketId) => {
   const queueIndex = waitingQueue.indexOf(socketId);
@@ -203,7 +208,9 @@ const relayToPeerInRoom = (socket, eventName, payload, logMessage) => {
 };
 
 io.on("connection", (socket) => {
+  onlineVisitors.add(socket.id);
   console.log("User connected:", socket.id);
+  emitOnlineCount();
 
   socket.on("join_queue", () => {
     if (activeCalls.has(socket.id)) {
@@ -249,10 +256,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+    onlineVisitors.delete(socket.id);
     removeFromQueue(socket.id);
     notifyPeerLeft(socket.id);
     removeRecentPeerReferences(socket.id);
     console.log("User disconnected:", socket.id);
+    emitOnlineCount();
   });
 });
 
