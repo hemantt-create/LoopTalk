@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #050713;
+  --foreground: #f7fbff;
 }
 
 @theme inline {
@@ -12,15 +12,188 @@
   --font-mono: "Courier New", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.neon-shell {
+  background:
+    linear-gradient(120deg, rgba(115, 47, 255, 0.18), transparent 32%),
+    linear-gradient(240deg, rgba(0, 224, 255, 0.18), transparent 34%),
+    linear-gradient(180deg, #050713 0%, #0a1024 48%, #060817 100%);
+}
+
+.neon-shell::before {
+  position: absolute;
+  inset: -35%;
+  pointer-events: none;
+  content: "";
+  background:
+    conic-gradient(
+      from 180deg at 50% 50%,
+      rgba(99, 102, 241, 0.14),
+      rgba(6, 182, 212, 0.16),
+      rgba(168, 85, 247, 0.18),
+      rgba(37, 99, 235, 0.14),
+      rgba(99, 102, 241, 0.14)
+    );
+  filter: blur(58px);
+  opacity: 0.86;
+  animation: neon-drift 18s ease-in-out infinite alternate;
+}
+
+.neon-shell::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.72), transparent 78%);
+}
+
+.glass-panel {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.055));
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(22px);
+}
+
+.glass-pill {
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  background: rgba(10, 18, 40, 0.58);
+  box-shadow:
+    0 12px 38px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px);
+}
+
+.neon-primary {
+  background: linear-gradient(135deg, #7c3aed 0%, #2563eb 48%, #06b6d4 100%);
+  box-shadow:
+    0 18px 45px rgba(37, 99, 235, 0.32),
+    0 0 24px rgba(6, 182, 212, 0.2);
+}
+
+.neon-primary:hover {
+  box-shadow:
+    0 22px 60px rgba(124, 58, 237, 0.42),
+    0 0 36px rgba(6, 182, 212, 0.34);
+}
+
+.neon-soft-button {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.neon-soft-button:hover {
+  border-color: rgba(125, 211, 252, 0.42);
+  box-shadow:
+    0 14px 38px rgba(6, 182, 212, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.neon-danger {
+  background: linear-gradient(135deg, #f43f5e 0%, #a855f7 100%);
+  box-shadow: 0 16px 42px rgba(244, 63, 94, 0.28);
+}
+
+.neon-danger:hover {
+  box-shadow:
+    0 18px 50px rgba(244, 63, 94, 0.36),
+    0 0 30px rgba(168, 85, 247, 0.26);
+}
+
+.online-pulse {
+  animation: online-pulse 2.8s ease-in-out infinite;
+}
+
+.state-surface {
+  animation: state-in 280ms ease-out both;
+}
+
+.voice-ring {
+  position: absolute;
+  inset: -14%;
+  border: 1px solid rgba(34, 211, 238, 0.34);
+  border-radius: 9999px;
+  animation: voice-ring 2.8s ease-out infinite;
+}
+
+.voice-ring:nth-child(2) {
+  animation-delay: 650ms;
+}
+
+.voice-ring:nth-child(3) {
+  animation-delay: 1300ms;
+}
+
+.voice-bar {
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.32);
+}
+
+@keyframes neon-drift {
+  0% {
+    transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1);
+  }
+
+  100% {
+    transform: translate3d(2%, 1%, 0) rotate(8deg) scale(1.06);
+  }
+}
+
+@keyframes online-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(34, 211, 238, 0.12),
+      0 12px 38px rgba(0, 0, 0, 0.26);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 7px rgba(34, 211, 238, 0.06),
+      0 16px 46px rgba(34, 211, 238, 0.16);
+  }
+}
+
+@keyframes state-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes voice-ring {
+  0% {
+    opacity: 0.72;
+    transform: scale(0.82);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.22);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neon-shell::before,
+  .online-pulse,
+  .state-surface,
+  .voice-ring {
+    animation: none;
+  }
 }

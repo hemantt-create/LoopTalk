@@ -83,10 +83,10 @@ export default function Home() {
   const sessionTokenRef = useRef(0);
   const onlineCountText =
     onlineCount === null
-      ? "Checking online users…"
+      ? "Checking online users..."
       : onlineCount === 1
-        ? "🟢 1 person online"
-        : `🟢 ${onlineCount} people online`;
+        ? "1 person online"
+        : `${onlineCount} people online`;
 
   const stopMicrophoneStream = useCallback(() => {
     microphoneStreamRef.current?.getTracks().forEach((track) => {
@@ -690,27 +690,32 @@ export default function Home() {
   };
 
   return (
-    <main className="relative flex min-h-screen overflow-hidden bg-[#f7f4ee] text-[#151515]">
+    <main className="neon-shell relative flex min-h-screen overflow-hidden text-[#f7fbff]">
       <audio ref={remoteAudioRef} autoPlay playsInline className="hidden" />
-      <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(19,170,145,0.16),transparent_35%),linear-gradient(300deg,rgba(244,98,76,0.14),transparent_38%)]" />
 
-      <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-12">
+      <section className="relative z-10 mx-auto flex min-h-svh w-full max-w-7xl flex-col px-5 py-4 sm:px-8 sm:py-5 lg:px-12">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div
               aria-hidden="true"
-              className="flex size-11 items-center justify-center rounded-full bg-[#151515] shadow-[0_12px_30px_rgba(21,21,21,0.18)]"
+              className="glass-panel flex size-11 items-center justify-center rounded-full shadow-[0_0_34px_rgba(34,211,238,0.24)]"
             >
               <div className="flex h-5 items-end gap-1">
-                <span className="h-3 w-1.5 rounded-full bg-[#2fd6b5]" />
-                <span className="h-5 w-1.5 rounded-full bg-[#fff6e5]" />
-                <span className="h-4 w-1.5 rounded-full bg-[#f4624c]" />
+                <span className="h-3 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_14px_rgba(103,232,249,0.7)]" />
+                <span className="h-5 w-1.5 rounded-full bg-violet-300 shadow-[0_0_14px_rgba(196,181,253,0.7)]" />
+                <span className="h-4 w-1.5 rounded-full bg-blue-400 shadow-[0_0_14px_rgba(96,165,250,0.7)]" />
               </div>
             </div>
-            <span className="text-xl font-black tracking-tight">LoopTalk</span>
+            <span className="text-xl font-black tracking-normal text-white">
+              LoopTalk
+            </span>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-3">
-            <p className="rounded-full border border-[#151515]/10 bg-white/70 px-4 py-2 text-xs font-bold text-[#287d70] shadow-sm backdrop-blur sm:text-sm">
+            <p className="glass-pill online-pulse inline-flex items-center rounded-full px-4 py-2 text-xs font-bold text-cyan-100 sm:text-sm">
+              <span
+                aria-hidden="true"
+                className="mr-2 size-2 rounded-full bg-cyan-300 shadow-[0_0_14px_rgba(103,232,249,0.9)]"
+              />
               <Users
                 aria-hidden="true"
                 className="mr-2 inline-block size-4 align-[-3px]"
@@ -720,17 +725,17 @@ export default function Home() {
             </p>
             <nav
               aria-label="Helpful pages"
-              className="flex items-center gap-4 text-sm font-bold text-[#505050]"
+              className="flex items-center gap-4 text-sm font-bold text-slate-300"
             >
               <Link
-                className="inline-flex items-center gap-1.5 transition hover:text-[#151515]"
+                className="inline-flex items-center gap-1.5 transition hover:text-cyan-200"
                 href="/safety"
               >
                 <Shield aria-hidden="true" className="size-4" />
                 Safety
               </Link>
               <Link
-                className="inline-flex items-center gap-1.5 transition hover:text-[#151515]"
+                className="inline-flex items-center gap-1.5 transition hover:text-cyan-200"
                 href="/privacy"
               >
                 <Lock aria-hidden="true" className="size-4" />
@@ -740,33 +745,35 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="grid flex-1 items-center gap-12 py-14 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.78fr)] lg:py-8">
+        <div className="grid flex-1 items-center gap-8 py-8 sm:py-10 lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.7fr)] lg:gap-10 lg:py-5">
           <div className="max-w-3xl">
-            <p className="mb-5 inline-flex rounded-full border border-[#151515]/10 bg-white/70 px-4 py-2 text-sm font-semibold text-[#287d70] shadow-sm backdrop-blur">
+            <p className="glass-pill mb-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold text-cyan-100">
               Random voice chats, one person at a time
             </p>
 
-            <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-tight text-balance sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-4xl text-4xl font-black leading-[0.98] tracking-normal text-balance text-white sm:text-5xl lg:text-6xl">
               Talk to random people through voice.
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-[#505050] sm:text-xl">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
               LoopTalk is a simple place for spontaneous one-to-one voice
               conversations with someone new, without profiles, feeds, or
               endless setup.
             </p>
 
-            <div className="mt-6 grid max-w-2xl gap-2 text-sm font-semibold leading-6 text-[#5f5b55]">
+            <div className="mt-4 grid max-w-2xl gap-1.5 text-sm font-semibold leading-5 text-slate-300">
               <p className="flex items-start gap-2">
                 <Headphones
                   aria-hidden="true"
-                  className="mt-1 size-4 shrink-0 text-[#287d70]"
+                  className="mt-1 size-4 shrink-0 text-cyan-300"
                 />
                 <span>For best voice quality, use earphones.</span>
               </p>
-              <p>Speaker mode may cause echo or unclear voice.</p>
+              <p className="text-slate-400">
+                Speaker mode may cause echo or unclear voice.
+              </p>
               {microphoneStatus === "idle" && (
-                <p className="flex items-start gap-2 text-[#287d70]">
+                <p className="flex items-start gap-2 text-cyan-200">
                   <Shield
                     aria-hidden="true"
                     className="mt-1 size-4 shrink-0"
@@ -782,10 +789,10 @@ export default function Home() {
             {microphoneStatus === "searching" ? (
               <div
                 role="status"
-                className="mt-9 inline-flex w-full flex-col gap-4 rounded-3xl border border-[#151515]/10 bg-white/72 p-5 shadow-sm backdrop-blur sm:w-auto sm:min-w-96"
+                className="glass-panel state-surface mt-6 inline-flex w-full flex-col gap-3 rounded-lg p-4 transition-all duration-300 sm:w-auto sm:min-w-96"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-lg font-bold text-[#151515]">
+                  <span className="text-lg font-bold text-white">
                     Looking for someone...
                   </span>
                   <span
@@ -795,20 +802,20 @@ export default function Home() {
                     {[0, 1, 2].map((dot) => (
                       <span
                         key={dot}
-                        className="size-2 rounded-full bg-[#2fd6b5] motion-safe:animate-bounce"
+                        className="size-2 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,0.8)] motion-safe:animate-bounce"
                         style={{ animationDelay: `${dot * 120}ms` }}
                       />
                     ))}
                   </span>
                 </div>
-                <p className="text-sm font-semibold text-[#505050]">
+                <p className="text-sm font-semibold text-slate-300">
                   Waiting for another person to join
                 </p>
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <button
                     type="button"
                     onClick={handleCancelSearch}
-                    className="inline-flex w-full items-center justify-center rounded-full border border-[#151515]/15 bg-white px-5 py-3 text-sm font-bold text-[#151515] transition hover:-translate-y-0.5 hover:border-[#151515]/30 focus:outline-none focus:ring-4 focus:ring-[#2fd6b5]/25 sm:w-auto"
+                    className="neon-soft-button inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300/20 sm:w-auto"
                   >
                     Cancel Search
                   </button>
@@ -817,35 +824,35 @@ export default function Home() {
             ) : microphoneStatus === "connected" ? (
               <div
                 role="status"
-                className="mt-9 inline-flex w-full flex-col gap-5 rounded-3xl border border-[#151515]/10 bg-white/72 p-5 shadow-sm backdrop-blur sm:w-auto sm:min-w-96"
+                className="glass-panel state-surface mt-6 inline-flex w-full flex-col gap-4 rounded-lg p-4 transition-all duration-300 sm:w-auto sm:min-w-96"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-lg font-bold text-[#151515]">
+                    <p className="text-lg font-bold text-white">
                       Connected with a stranger
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-[#505050]">
+                    <p className="mt-1 text-sm font-semibold text-cyan-100">
                       {isMuted ? "Microphone muted" : "Voice is live"}
                     </p>
-                    <p className="mt-2 break-all text-xs font-semibold text-[#8a6259]">
+                    <p className="mt-2 break-all text-xs font-semibold text-violet-200/80">
                       {matchInfo
                         ? `Room ${matchInfo.roomId} | Peer ${matchInfo.peerId} | Initiator: ${
                             matchInfo.isInitiator ? "yes" : "no"
                           }`
                         : "Matched with stranger"}
                     </p>
-                    <p className="mt-1 text-xs font-semibold text-[#8a6259]">
+                    <p className="mt-1 text-xs font-semibold text-violet-200/80">
                       WebRTC: {webRtcConnectionState}
                     </p>
-                    <div className="mt-3 grid gap-1 text-xs font-semibold leading-5 text-[#5f5b55]">
+                    <div className="mt-3 grid gap-1 text-xs font-semibold leading-5 text-slate-300">
                       <p className="flex items-start gap-2">
                         <Headphones
                           aria-hidden="true"
-                          className="mt-0.5 size-3.5 shrink-0 text-[#287d70]"
+                          className="mt-0.5 size-3.5 shrink-0 text-cyan-300"
                         />
                         <span>{audioQualityNotes[0]}</span>
                       </p>
-                      <p>{audioQualityNotes[1]}</p>
+                      <p className="text-slate-400">{audioQualityNotes[1]}</p>
                     </div>
                   </div>
                   <div
@@ -855,7 +862,7 @@ export default function Home() {
                     {[28, 18, 34, 24, 38].map((height, index) => (
                       <span
                         key={`${height}-${index}`}
-                        className="w-2 rounded-full bg-[#2fd6b5] motion-safe:animate-pulse even:bg-[#f4624c]"
+                        className="voice-bar w-2 rounded-full bg-cyan-300 motion-safe:animate-pulse even:bg-violet-400"
                         style={{
                           animationDelay: `${index * 110}ms`,
                           height,
@@ -868,7 +875,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={handleToggleMute}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#151515]/15 bg-white px-5 py-3 text-sm font-bold text-[#151515] transition hover:-translate-y-0.5 hover:border-[#151515]/30 focus:outline-none focus:ring-4 focus:ring-[#2fd6b5]/25 sm:w-auto"
+                    className="neon-soft-button inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300/20 sm:w-auto"
                   >
                     {isMuted ? (
                       <Mic aria-hidden="true" className="size-4" />
@@ -880,7 +887,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={handleNextPerson}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#151515]/15 bg-white px-5 py-3 text-sm font-bold text-[#151515] transition hover:-translate-y-0.5 hover:border-[#151515]/30 focus:outline-none focus:ring-4 focus:ring-[#2fd6b5]/25 sm:w-auto"
+                    className="neon-soft-button inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300/20 sm:w-auto"
                   >
                     <Shuffle aria-hidden="true" className="size-4" />
                     Next Person
@@ -888,7 +895,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={handleEndCall}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#f4624c]/25 bg-[#f4624c] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#d94d3b] focus:outline-none focus:ring-4 focus:ring-[#f4624c]/20 sm:w-auto"
+                    className="neon-danger inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-rose-400/20 sm:w-auto"
                   >
                     <PhoneOff aria-hidden="true" className="size-4" />
                     End Call
@@ -896,7 +903,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={handleReport}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#151515]/15 bg-white px-5 py-3 text-sm font-bold text-[#8a3d33] transition hover:-translate-y-0.5 hover:border-[#f4624c]/35 focus:outline-none focus:ring-4 focus:ring-[#f4624c]/20 sm:w-auto"
+                    className="neon-soft-button inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-rose-100 transition hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-rose-400/20 sm:w-auto"
                   >
                     <Flag aria-hidden="true" className="size-4" />
                     Report
@@ -904,12 +911,12 @@ export default function Home() {
                 </div>
               </div>
             ) : (
-              <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div className="state-surface mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <button
                   type="button"
                   disabled={isStarting}
                   onClick={handleStartTalking}
-                  className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-[#151515] px-8 py-4 text-lg font-bold text-white shadow-[0_18px_40px_rgba(21,21,21,0.24)] transition hover:-translate-y-0.5 hover:bg-[#252525] focus:outline-none focus:ring-4 focus:ring-[#2fd6b5]/35 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 sm:w-auto"
+                  className="neon-primary group inline-flex w-full items-center justify-center gap-3 rounded-full px-7 py-3.5 text-base font-bold text-white transition hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300/25 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 sm:w-auto"
                 >
                   <Mic aria-hidden="true" className="size-5" />
                   Start Talking
@@ -920,7 +927,7 @@ export default function Home() {
             {microphoneStatus === "denied" && (
               <p
                 role="status"
-                className="mt-4 text-sm font-semibold text-[#287d70]"
+                className="glass-pill state-surface mt-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold text-cyan-100"
               >
                 Microphone access is required to start talking.
               </p>
@@ -929,27 +936,27 @@ export default function Home() {
             {socketMessage && (
               <p
                 role={socketStatus === "error" ? "alert" : "status"}
-                className={`mt-4 text-sm font-semibold ${
+                className={`glass-pill state-surface mt-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold ${
                   socketStatus === "error"
-                    ? "text-[#d94d3b]"
-                    : "text-[#287d70]"
+                    ? "text-rose-100"
+                    : "text-cyan-100"
                 }`}
               >
                 {socketMessage}
               </p>
             )}
 
-            <div className="mt-10 grid gap-3 sm:grid-cols-3">
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
               {highlights.map((highlight) => (
                 <div
                   key={highlight}
-                  className="flex items-center gap-3 rounded-lg border border-[#151515]/10 bg-white/72 px-4 py-3 shadow-sm backdrop-blur"
+                  className="glass-panel flex items-center gap-3 rounded-lg px-4 py-3"
                 >
                   <span
                     aria-hidden="true"
-                    className="size-2.5 rounded-full bg-[#f4624c] ring-4 ring-[#f4624c]/15"
+                    className="size-2.5 rounded-full bg-violet-300 shadow-[0_0_16px_rgba(196,181,253,0.7)] ring-4 ring-violet-300/10"
                   />
-                  <span className="text-sm font-bold text-[#242424]">
+                  <span className="text-sm font-bold text-slate-100">
                     {highlight}
                   </span>
                 </div>
@@ -957,20 +964,27 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative mx-auto flex aspect-square w-full max-w-115 items-center justify-center rounded-4xl border border-[#151515]/10 bg-white/62 p-6 shadow-[0_30px_80px_rgba(21,21,21,0.12)] backdrop-blur">
+          <div className="glass-panel relative mx-auto flex aspect-square w-full max-w-sm items-center justify-center rounded-lg p-5 lg:max-w-md">
             <div
               aria-hidden="true"
-              className="absolute inset-6 rounded-3xl border border-dashed border-[#151515]/15"
+              className="absolute inset-6 rounded-lg border border-dashed border-cyan-200/20"
             />
-            <div className="relative flex size-52 items-center justify-center rounded-full bg-[#151515] shadow-[0_30px_70px_rgba(21,21,21,0.28)] sm:size-64">
-              <div className="absolute size-[132%] rounded-full border border-[#2fd6b5]/45" />
-              <div className="absolute size-[162%] rounded-full border border-[#f4624c]/30" />
-              <div className="flex h-28 items-end gap-2 sm:h-32">
+            <div className="relative flex size-44 items-center justify-center rounded-full bg-slate-950/80 shadow-[0_0_80px_rgba(34,211,238,0.18)] sm:size-56 lg:size-60">
+              {microphoneStatus === "connected" && (
+                <>
+                  <span aria-hidden="true" className="voice-ring" />
+                  <span aria-hidden="true" className="voice-ring" />
+                  <span aria-hidden="true" className="voice-ring" />
+                </>
+              )}
+              <div className="absolute size-[132%] rounded-full border border-cyan-300/40" />
+              <div className="absolute size-[162%] rounded-full border border-violet-300/25" />
+              <div className="flex h-24 items-end gap-2 sm:h-28">
                 {[34, 62, 92, 118, 78, 48, 86, 56].map((height, index) => (
                   <span
                     aria-hidden="true"
                     key={`${height}-${index}`}
-                    className="w-3 rounded-full bg-[#fff6e5] odd:bg-[#2fd6b5] even:bg-[#f4624c] sm:w-4"
+                    className="voice-bar w-3 rounded-full bg-cyan-200 odd:bg-cyan-300 even:bg-violet-400 sm:w-4"
                     style={{ height }}
                   />
                 ))}
@@ -979,11 +993,11 @@ export default function Home() {
           </div>
         </div>
 
-        <footer className="pb-2 text-center text-sm leading-6 text-[#5f5b55]">
+        <footer className="pb-2 text-center text-sm leading-6 text-slate-400">
           Please keep conversations respectful. Leave any chat that feels
           uncomfortable or unsafe.{" "}
           <Link
-            className="inline-flex items-center gap-1 font-bold text-[#287d70]"
+            className="inline-flex items-center gap-1 font-bold text-cyan-200 transition hover:text-white"
             href="/safety"
           >
             <Shield aria-hidden="true" className="size-3.5" />
@@ -991,7 +1005,7 @@ export default function Home() {
           </Link>{" "}
           |{" "}
           <Link
-            className="inline-flex items-center gap-1 font-bold text-[#287d70]"
+            className="inline-flex items-center gap-1 font-bold text-cyan-200 transition hover:text-white"
             href="/privacy"
           >
             <Lock aria-hidden="true" className="size-3.5" />
