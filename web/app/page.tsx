@@ -1,5 +1,16 @@
 "use client";
 
+import {
+  Flag,
+  Headphones,
+  Lock,
+  Mic,
+  MicOff,
+  PhoneOff,
+  Shield,
+  Shuffle,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -700,19 +711,29 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap items-center justify-end gap-3">
             <p className="rounded-full border border-[#151515]/10 bg-white/70 px-4 py-2 text-xs font-bold text-[#287d70] shadow-sm backdrop-blur sm:text-sm">
+              <Users
+                aria-hidden="true"
+                className="mr-2 inline-block size-4 align-[-3px]"
+                strokeWidth={2.3}
+              />
               {onlineCountText}
             </p>
             <nav
               aria-label="Helpful pages"
               className="flex items-center gap-4 text-sm font-bold text-[#505050]"
             >
-              <Link className="transition hover:text-[#151515]" href="/safety">
+              <Link
+                className="inline-flex items-center gap-1.5 transition hover:text-[#151515]"
+                href="/safety"
+              >
+                <Shield aria-hidden="true" className="size-4" />
                 Safety
               </Link>
               <Link
-                className="transition hover:text-[#151515]"
+                className="inline-flex items-center gap-1.5 transition hover:text-[#151515]"
                 href="/privacy"
               >
+                <Lock aria-hidden="true" className="size-4" />
                 Privacy
               </Link>
             </nav>
@@ -736,12 +757,24 @@ export default function Home() {
             </p>
 
             <div className="mt-6 grid max-w-2xl gap-2 text-sm font-semibold leading-6 text-[#5f5b55]">
-              <p>For best voice quality, use earphones.</p>
+              <p className="flex items-start gap-2">
+                <Headphones
+                  aria-hidden="true"
+                  className="mt-1 size-4 shrink-0 text-[#287d70]"
+                />
+                <span>For best voice quality, use earphones.</span>
+              </p>
               <p>Speaker mode may cause echo or unclear voice.</p>
               {microphoneStatus === "idle" && (
-                <p className="text-[#287d70]">
-                  Be respectful. Do not share personal information. You can
-                  leave anytime.
+                <p className="flex items-start gap-2 text-[#287d70]">
+                  <Shield
+                    aria-hidden="true"
+                    className="mt-1 size-4 shrink-0"
+                  />
+                  <span>
+                    Be respectful. Do not share personal information. You can
+                    leave anytime.
+                  </span>
                 </p>
               )}
             </div>
@@ -805,9 +838,14 @@ export default function Home() {
                       WebRTC: {webRtcConnectionState}
                     </p>
                     <div className="mt-3 grid gap-1 text-xs font-semibold leading-5 text-[#5f5b55]">
-                      {audioQualityNotes.map((note) => (
-                        <p key={note}>{note}</p>
-                      ))}
+                      <p className="flex items-start gap-2">
+                        <Headphones
+                          aria-hidden="true"
+                          className="mt-0.5 size-3.5 shrink-0 text-[#287d70]"
+                        />
+                        <span>{audioQualityNotes[0]}</span>
+                      </p>
+                      <p>{audioQualityNotes[1]}</p>
                     </div>
                   </div>
                   <div
@@ -830,29 +868,37 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={handleToggleMute}
-                    className="inline-flex w-full items-center justify-center rounded-full border border-[#151515]/15 bg-white px-5 py-3 text-sm font-bold text-[#151515] transition hover:-translate-y-0.5 hover:border-[#151515]/30 focus:outline-none focus:ring-4 focus:ring-[#2fd6b5]/25 sm:w-auto"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#151515]/15 bg-white px-5 py-3 text-sm font-bold text-[#151515] transition hover:-translate-y-0.5 hover:border-[#151515]/30 focus:outline-none focus:ring-4 focus:ring-[#2fd6b5]/25 sm:w-auto"
                   >
+                    {isMuted ? (
+                      <Mic aria-hidden="true" className="size-4" />
+                    ) : (
+                      <MicOff aria-hidden="true" className="size-4" />
+                    )}
                     {isMuted ? "Unmute" : "Mute"}
                   </button>
                   <button
                     type="button"
                     onClick={handleNextPerson}
-                    className="inline-flex w-full items-center justify-center rounded-full border border-[#151515]/15 bg-white px-5 py-3 text-sm font-bold text-[#151515] transition hover:-translate-y-0.5 hover:border-[#151515]/30 focus:outline-none focus:ring-4 focus:ring-[#2fd6b5]/25 sm:w-auto"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#151515]/15 bg-white px-5 py-3 text-sm font-bold text-[#151515] transition hover:-translate-y-0.5 hover:border-[#151515]/30 focus:outline-none focus:ring-4 focus:ring-[#2fd6b5]/25 sm:w-auto"
                   >
+                    <Shuffle aria-hidden="true" className="size-4" />
                     Next Person
                   </button>
                   <button
                     type="button"
                     onClick={handleEndCall}
-                    className="inline-flex w-full items-center justify-center rounded-full border border-[#f4624c]/25 bg-[#f4624c] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#d94d3b] focus:outline-none focus:ring-4 focus:ring-[#f4624c]/20 sm:w-auto"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#f4624c]/25 bg-[#f4624c] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#d94d3b] focus:outline-none focus:ring-4 focus:ring-[#f4624c]/20 sm:w-auto"
                   >
+                    <PhoneOff aria-hidden="true" className="size-4" />
                     End Call
                   </button>
                   <button
                     type="button"
                     onClick={handleReport}
-                    className="inline-flex w-full items-center justify-center rounded-full border border-[#151515]/15 bg-white px-5 py-3 text-sm font-bold text-[#8a3d33] transition hover:-translate-y-0.5 hover:border-[#f4624c]/35 focus:outline-none focus:ring-4 focus:ring-[#f4624c]/20 sm:w-auto"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#151515]/15 bg-white px-5 py-3 text-sm font-bold text-[#8a3d33] transition hover:-translate-y-0.5 hover:border-[#f4624c]/35 focus:outline-none focus:ring-4 focus:ring-[#f4624c]/20 sm:w-auto"
                   >
+                    <Flag aria-hidden="true" className="size-4" />
                     Report
                   </button>
                 </div>
@@ -865,13 +911,8 @@ export default function Home() {
                   onClick={handleStartTalking}
                   className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-[#151515] px-8 py-4 text-lg font-bold text-white shadow-[0_18px_40px_rgba(21,21,21,0.24)] transition hover:-translate-y-0.5 hover:bg-[#252525] focus:outline-none focus:ring-4 focus:ring-[#2fd6b5]/35 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 sm:w-auto"
                 >
+                  <Mic aria-hidden="true" className="size-5" />
                   Start Talking
-                  <span
-                    aria-hidden="true"
-                    className="flex size-8 items-center justify-center rounded-full bg-[#2fd6b5] text-[#151515] transition group-hover:translate-x-0.5"
-                  >
-                    -&gt;
-                  </span>
                 </button>
               </div>
             )}
@@ -941,11 +982,19 @@ export default function Home() {
         <footer className="pb-2 text-center text-sm leading-6 text-[#5f5b55]">
           Please keep conversations respectful. Leave any chat that feels
           uncomfortable or unsafe.{" "}
-          <Link className="font-bold text-[#287d70]" href="/safety">
+          <Link
+            className="inline-flex items-center gap-1 font-bold text-[#287d70]"
+            href="/safety"
+          >
+            <Shield aria-hidden="true" className="size-3.5" />
             Safety
           </Link>{" "}
           |{" "}
-          <Link className="font-bold text-[#287d70]" href="/privacy">
+          <Link
+            className="inline-flex items-center gap-1 font-bold text-[#287d70]"
+            href="/privacy"
+          >
+            <Lock aria-hidden="true" className="size-3.5" />
             Privacy
           </Link>
         </footer>

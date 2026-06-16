@@ -1,3 +1,4 @@
+import { Headphones, Home, Lock, Shield } from "lucide-react";
 import Link from "next/link";
 
 const safetyItems = [
@@ -18,14 +19,19 @@ export default function SafetyPage() {
           <Link className="text-xl font-black tracking-tight" href="/">
             LoopTalk
           </Link>
-          <Link className="text-sm font-bold text-[#287d70]" href="/privacy">
+          <Link
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#287d70]"
+            href="/privacy"
+          >
+            <Lock aria-hidden="true" className="size-4" />
             Privacy
           </Link>
         </header>
 
         <div className="flex flex-1 items-center py-12">
           <div className="w-full">
-            <p className="mb-5 inline-flex rounded-full border border-[#151515]/10 bg-white/70 px-4 py-2 text-sm font-semibold text-[#287d70] shadow-sm backdrop-blur">
+            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#151515]/10 bg-white/70 px-4 py-2 text-sm font-semibold text-[#287d70] shadow-sm backdrop-blur">
+              <Shield aria-hidden="true" className="size-4" />
               Safety
             </p>
             <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
@@ -35,10 +41,17 @@ export default function SafetyPage() {
               <ul className="grid gap-4">
                 {safetyItems.map((item) => (
                   <li key={item} className="flex gap-3 text-[#505050]">
-                    <span
-                      aria-hidden="true"
-                      className="mt-2 size-2.5 shrink-0 rounded-full bg-[#f4624c] ring-4 ring-[#f4624c]/15"
-                    />
+                    {item.includes("earphones") ? (
+                      <Headphones
+                        aria-hidden="true"
+                        className="mt-1 size-5 shrink-0 text-[#287d70]"
+                      />
+                    ) : (
+                      <Shield
+                        aria-hidden="true"
+                        className="mt-1 size-5 shrink-0 text-[#f4624c]"
+                      />
+                    )}
                     <span className="text-base font-semibold leading-7">
                       {item}
                     </span>
@@ -47,9 +60,10 @@ export default function SafetyPage() {
               </ul>
             </div>
             <Link
-              className="mt-8 inline-flex items-center justify-center rounded-full bg-[#151515] px-6 py-3 text-sm font-bold text-white shadow-[0_18px_40px_rgba(21,21,21,0.18)] transition hover:-translate-y-0.5 hover:bg-[#252525] focus:outline-none focus:ring-4 focus:ring-[#2fd6b5]/35"
+              className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-[#151515] px-6 py-3 text-sm font-bold text-white shadow-[0_18px_40px_rgba(21,21,21,0.18)] transition hover:-translate-y-0.5 hover:bg-[#252525] focus:outline-none focus:ring-4 focus:ring-[#2fd6b5]/35"
               href="/"
             >
+              <Home aria-hidden="true" className="size-4" />
               Back to LoopTalk
             </Link>
           </div>
