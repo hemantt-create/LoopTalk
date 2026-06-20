@@ -1,9 +1,18 @@
 import { io } from "socket.io-client";
 
-const socketUrl =
-  process.env.NEXT_PUBLIC_SIGNALING_URL || "http://localhost:3001";
+const getSocketUrl = () => {
+  if (process.env.NEXT_PUBLIC_SIGNALING_URL) {
+    return process.env.NEXT_PUBLIC_SIGNALING_URL;
+  }
 
-export const socket = io(socketUrl, {
+  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+    return "http://localhost:3001";
+  }
+
+  return "https://looptalk-production.up.railway.app";
+};
+
+export const socket = io(getSocketUrl(), {
   autoConnect: false,
   transports: ["websocket"],
 });
