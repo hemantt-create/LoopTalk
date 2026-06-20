@@ -7,17 +7,30 @@ const app = express();
 const server = http.createServer(app);
 
 const PORT = process.env.PORT || 3001;
-const allowedOrigins = ["http://localhost:3000", process.env.FRONTEND_URL].filter(Boolean);
+const allowedOrigins = new Set(
+  [
+    "http://localhost:3000",
+    "https://loop-talk-gilt.vercel.app",
+    process.env.FRONTEND_URL,
+  ].filter(Boolean)
+);
+const vercelPreviewOriginPattern = /^https:\/\/loop-talk.*\.vercel\.app$/;
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) {
+    return true;
+  }
+
+  return (
+    allowedOrigins.has(origin) || vercelPreviewOriginPattern.test(origin)
+  );
+};
 
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-      return;
-    }
-
-    callback(new Error("Not allowed by CORS"));
+    callback(null, isAllowedOrigin(origin));
   },
+  methods: ["GET", "POST"],
 };
 
 app.use(cors(corsOptions));
@@ -31,10 +44,7 @@ app.get("/health", (req, res) => {
 });
 
 const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-  },
+  cors: corsOptions,
 });
 
 const waitingQueue = [];
