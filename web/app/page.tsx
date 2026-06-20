@@ -14,7 +14,7 @@ import {
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { socket } from "@/lib/socket";
+import { socket, socketUrl } from "@/lib/socket";
 
 type MicrophoneStatus = "idle" | "searching" | "connected" | "denied";
 type SocketStatus = "idle" | "connecting" | "connected" | "error";
@@ -369,7 +369,7 @@ export default function Home() {
     setSocketStatus("error");
     setOnlineCount(null);
     setSocketMessage(
-      `Could not connect to LoopTalk server at http://localhost:3001. ${error.message || "Please make sure the backend is running."}`,
+      `Could not connect to LoopTalk server at ${socketUrl}. ${error.message || "Please make sure the backend is running."}`,
     );
   }, []);
 
